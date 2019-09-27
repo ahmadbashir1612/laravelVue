@@ -22,6 +22,7 @@
                       <th>Name</th>
                       <th>Email</th>
                       <th>Type</th>
+                      <th>Registered at</th>
                       <th>Modify</th>
                     </tr>
                   </thead>
@@ -30,8 +31,9 @@
                       <td>{{user.id}}</td>
                       <td>{{user.name}}</td>
                       <td>{{user.email}}</td>
-                       <td>{{user.type}}</td>
-                      <td><span class="tag tag-success">Approved</span></td>
+                       <td>{{user.type|upText}}</td>
+                       <td>{{user.created_at|myDate}}</td>
+                  
                       <td>
                           <a href="#" >
                             <i class="fa fa-edit blue"/>
@@ -138,13 +140,35 @@
           },
 
         createUser(){
-            this.form.post('api/user');
+            this.$Progress.start();
+
+            this.form.post('api/user')
+            .then(()=>{
+
+            Fire.$emit('AfterCreate');
+            $('#addNew').modal('hide');       
+            toast.fire({
+              type: 'success',
+              title: 'User created successfully'
+            })
+
+            this.$Progress.finish();
+            })
+            .catch(()=>{
+
+            });     
             
         }
       },
         mounted() {
 
             this.loadUsers();
+            // setInterval(() => {
+            //   this.loadUsers()
+            // }, 3000);
+            Fire.$on('AfterCreate',()=>{
+              this.loadUsers();
+            })
             console.log('Component mounted.')
         }
     }
